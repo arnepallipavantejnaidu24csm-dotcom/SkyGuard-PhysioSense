@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  aws-weather-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aws_weather_platform
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - PYTHONUNBUFFERED=1
+      - FLASK_ENV=production
+    volumes:
+      # Mount output directory to persist generated datasets and reports on host
+      - ./output:/app/output
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2048M
+        reservations:
+          cpus: '0.5'
+          memory: 512M

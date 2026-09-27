@@ -1,0 +1,48 @@
+timestamp,sensor,observed_value,anomaly_category,rule_violated,description
+2026-09-01 13:25:00,temperature,-999.0,MISSING,temperature_missing_or_sentinel,Missing reading or sentinel value detected in temperature
+2026-09-01 13:25:00,pressure+humidity,1021.8256432354663,PHYSICS_VIOLATION,vapor_pressure_le_ambient,Water vapor pressure exceeds total atmospheric ambient pressure
+2026-09-01 13:30:00,temperature,-999.0,MISSING,temperature_missing_or_sentinel,Missing reading or sentinel value detected in temperature
+2026-09-01 13:30:00,pressure+humidity,1022.014788480272,PHYSICS_VIOLATION,vapor_pressure_le_ambient,Water vapor pressure exceeds total atmospheric ambient pressure
+2026-09-01 13:35:00,temperature,-999.0,MISSING,temperature_missing_or_sentinel,Missing reading or sentinel value detected in temperature
+2026-09-01 13:35:00,pressure+humidity,1021.6237412402363,PHYSICS_VIOLATION,vapor_pressure_le_ambient,Water vapor pressure exceeds total atmospheric ambient pressure
+2026-09-02 01:10:00,temperature+humidity,"T=17.344021504673805°C, RH=118.5%",PHYSICS_VIOLATION,dew_point_le_temp,Thermodynamic violation: Dew Point (20.06°C) exceeds Dry Bulb Temperature (17.344021504673805°C)
+2026-09-02 01:10:00,humidity,118.5,PHYSICS_VIOLATION,rh_physical_bounds,"Relative Humidity (118.5%) out of physical bounds [0%, 102%]"
+2026-09-02 01:10:00,humidity,118.5,SPIKE,humidity_rate_of_change_spike,Unphysical abrupt step change / transient spike in humidity (118.5)
+2026-09-02 18:00:00,pressure,,MISSING,pressure_missing_or_sentinel,Missing reading or sentinel value detected in pressure
+2026-09-02 18:05:00,pressure,,MISSING,pressure_missing_or_sentinel,Missing reading or sentinel value detected in pressure
+2026-09-02 18:10:00,pressure,,MISSING,pressure_missing_or_sentinel,Missing reading or sentinel value detected in pressure
+2026-09-02 18:15:00,pressure,,MISSING,pressure_missing_or_sentinel,Missing reading or sentinel value detected in pressure
+2026-09-02 18:20:00,pressure,,MISSING,pressure_missing_or_sentinel,Missing reading or sentinel value detected in pressure
+2026-09-03 10:45:00,wind_speed,-4.5,PHYSICS_VIOLATION,wind_speed_non_negative,Physically impossible negative wind speed (-4.5 m/s)
+2026-09-03 12:55:00,wind_speed,21.565495298981688,SPIKE,wind_speed_rate_of_change_spike,Unphysical abrupt step change / transient spike in wind_speed (21.565495298981688)
+2026-09-04 03:35:00,humidity,-12.0,PHYSICS_VIOLATION,rh_physical_bounds,"Relative Humidity (-12.0%) out of physical bounds [0%, 102%]"
+2026-09-04 03:35:00,humidity,-12.0,SPIKE,humidity_rate_of_change_spike,Unphysical abrupt step change / transient spike in humidity (-12.0)
+2026-09-04 03:40:00,humidity,90.66904664838034,SPIKE,humidity_rate_of_change_spike,Unphysical abrupt step change / transient spike in humidity (90.66904664838034)
+2026-09-04 15:20:00,temperature,44.84842929924851,SPIKE,temperature_rate_of_change_spike,Unphysical abrupt step change / transient spike in temperature (44.84842929924851)
+2026-09-04 15:25:00,temperature,30.76647889319906,SPIKE,temperature_rate_of_change_spike,Unphysical abrupt step change / transient spike in temperature (30.76647889319906)
+2026-09-05 04:45:00,pressure,1033.0745471230825,SPIKE,pressure_rate_of_change_spike,Unphysical abrupt step change / transient spike in pressure (1033.0745471230825)
+2026-09-05 04:50:00,pressure,1023.5445508977492,SPIKE,pressure_rate_of_change_spike,Unphysical abrupt step change / transient spike in pressure (1023.5445508977492)
+2026-09-05 13:10:00,wind_speed,108.0,PHYSICS_VIOLATION,wind_speed_max_bounds,Wind speed (108.0 m/s) exceeds typical 50 m/s bound
+2026-09-05 13:10:00,wind_speed,108.0,SPIKE,wind_speed_rate_of_change_spike,Unphysical abrupt step change / transient spike in wind_speed (108.0)
+2026-09-05 13:15:00,wind_speed,8.286931665022301,SPIKE,wind_speed_rate_of_change_spike,Unphysical abrupt step change / transient spike in wind_speed (8.286931665022301)
+2026-09-06 00:55:00,temperature,78.5,SPIKE,temperature_rate_of_change_spike,Unphysical abrupt step change / transient spike in temperature (78.5)
+2026-09-06 01:00:00,temperature,15.464917734582063,SPIKE,temperature_rate_of_change_spike,Unphysical abrupt step change / transient spike in temperature (15.464917734582063)
+2026-09-06 14:20:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 14:25:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 14:30:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 14:35:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 14:40:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 14:45:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 14:50:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 14:55:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 15:00:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 15:05:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 15:10:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 15:15:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 15:20:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 15:25:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 15:30:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 15:35:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-06 15:40:00,temperature,28.57157047888846,STUCK,temperature_sensor_flatline,Frozen / stuck sensor: zero variance in temperature over time window (28.57157047888846)
+2026-09-07 03:50:00,pressure,720.0,SPIKE,pressure_rate_of_change_spike,Unphysical abrupt step change / transient spike in pressure (720.0)
+2026-09-07 03:55:00,pressure,1001.026162497566,SPIKE,pressure_rate_of_change_spike,Unphysical abrupt step change / transient spike in pressure (1001.026162497566)

@@ -1,0 +1,5 @@
+timestamp,sensor_name,instrument_model,urgency,trigger_reason,current_health_score,predicted_rul_days,action_instructions
+2026-09-24 12:00:00,temperature,Pt100 4-Wire RTD Class 1/10 DIN,URGENT,Health Score Critical (55.8%) | Bias (+1.42) exceeds limits | RUL: 0.0 days,55.8,0.0,URGENT: Immediate field inspection & sensor replacement / full recalibration required for temperature.
+2026-09-24 12:00:00,pressure,Vaisala PTB330 Digital Barometer,URGENT,Health Score Critical (56.8%) | Bias (-1.71) exceeds limits | RUL: 0.0 days,56.8,0.0,URGENT: Immediate field inspection & sensor replacement / full recalibration required for pressure.
+2026-09-24 12:00:00,humidity,Rotronic HygroMet4 Thin-Film Capacitive,HIGH,Sensor Degraded (83.2%) | RUL: 13.0 days | Drift: -0.174/day,83.2,13.0,Schedule maintenance within 13 days: Recalibrate zero/span and clean sensor aperture.
+2026-09-24 12:00:00,wind_speed,Gill WindObserver II Ultrasonic Anemometer,HIGH,Sensor Degraded (75.9%) | RUL: 10.1 days | Drift: +0.054/day,75.9,10.1,Schedule maintenance within 10 days: Recalibrate zero/span and clean sensor aperture.

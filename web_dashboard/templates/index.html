@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyGuard PhysioSense</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090d16',
+                        darkCard: 'rgba(15, 23, 42, 0.85)',
+                        cardBorder: 'rgba(255, 255, 255, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Leaflet Map CSS & JS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Custom Dashboard Styles -->
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+</head>
+
+<body class="bg-[#0b0f19] text-gray-100 min-h-screen antialiased flex flex-col font-sans selection:bg-cyan-500 selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-[#0f172a]/90 backdrop-blur-md border-b border-gray-800 px-4 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-4">
+
+        <div class="flex items-center gap-3">
+
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-500 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                <i class="fas fa-satellite-dish text-white text-lg"></i>
+            </div>
+
+            <div>
+                <div class="flex items-center gap-2">
+
+                    <h1 class="text-base font-extrabold tracking-tight text-white">
+                        SkyGuard PhysioSense
+                    </h1>
+
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-700/60 flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        LIVE
+                    </span>
+
+                </div>
+
+                <p class="text-xs text-gray-400">
+                    Physics-Based Weather Sensors Anomaly detection Platform
+                </p>
+            </div>
+        </div>
+
+
+        <!-- Station Selector & Global Controls -->
+        <div class="flex items-center flex-wrap gap-2.5">
+
+            <!-- Theme Toggle -->
+            <button
+                id="theme-toggle"
+                type="button"
+                class="w-9 h-9 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 flex items-center justify-center transition"
+                title="Toggle light/dark theme"
+                aria-label="Toggle light/dark theme">
+
+                <i id="theme-icon" class="fas fa-sun text-amber-400"></i>
+
+            </button>
+
+
+            <!-- Station Dropdown -->
+            <div class="relative">
+
+                <select
+                    id="station-select"
+                    class="bg-gray-800/90 text-xs font-semibold text-gray-200 border border-gray-700 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-cyan-500 outline-none pr-8 cursor-pointer">
+
+                    <!-- Populated dynamically -->
+
+                </select>
+
+            </div>
+
+
+            <!-- Play / Pause Stream -->
+            <button
+                id="btn-play-pause"
+                class="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-semibold border border-gray-700 flex items-center gap-1.5 transition">
+
+                <i class="fas fa-pause text-xs"></i>
+                Pause
+
+            </button>
+
+
+            <!-- Export Buttons -->
+            <div class="flex items-center gap-1 bg-gray-800/80 p-0.5 rounded-lg border border-gray-700">
+
+                <a
+                    href="/api/export/csv"
+                    class="px-2.5 py-1 rounded text-[11px] font-medium text-gray-300 hover:text-white hover:bg-gray-700 flex items-center gap-1 transition"
+                    title="Export Corrected Telemetry CSV">
+
+                    <i class="fas fa-file-csv text-emerald-400"></i>
+                    CSV
+
+                </a>
+
+
+                <a
+                    href="/api/export/json"
+                    class="px-2.5 py-1 rounded text-[11px] font-medium text-gray-300 hover:text-white hover:bg-gray-700 flex items-center gap-1 transition"
+                    title="Export Corrected Telemetry JSON">
+
+                    <i class="fas fa-file-code text-amber-400"></i>
+                    JSON
+
+                </a>
+
+
+                <button
+                    onclick="window.print()"
+                    class="px-2.5 py-1 rounded text-[11px] font-medium text-gray-300 hover:text-white hover:bg-gray-700 flex items-center gap-1 transition"
+                    title="Printable Report">
+
+                    <i class="fas fa-print text-cyan-400"></i>
+                    Print
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 space-y-6">
+
+
+        <!-- ========================================================= -->
+        <!-- LIVE ANOMALY STATUS BANNER -->
+        <!-- ========================================================= -->
+
+        <div
+            id="anomaly-status-banner"
+            class="p-3 rounded-lg flex items-center justify-between text-xs font-semibold
+                   bg-cyan-50 text-cyan-700
+                   border border-cyan-300
+                   dark:bg-cyan-950/40
+                   dark:text-cyan-300
+                   dark:border-cyan-800/60
+                   shadow-sm">
+
+            <div class="flex items-center gap-2">
+
+                <span
+                    class="w-2 h-2 rounded-full bg-cyan-400 animate-ping">
+                </span>
+
+                <span>
+                    All Instruments Operating Nominally
+                    (Zero Active Physics Violations)
+                </span>
+
+            </div>
+
+
+            <span class="text-xs text-cyan-600 dark:text-cyan-400">
+
+                Timestamp:
+                <strong
+                    id="current-station-name"
+                    class="text-cyan-800 dark:text-cyan-200">
+
+                    AWS-01-ISRIKA1-Bheemili
+
+                </strong>
+
+            </span>
+
+        </div>
+
+
+        <!-- ========================================================= -->
+        <!-- LIVE TELEMETRY METRIC CARDS -->
+        <!-- ========================================================= -->
+
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+
+            <!-- Temperature Card -->
+            <div class="glass-card p-4 rounded-xl relative overflow-hidden group">
+
+                <div class="absolute top-0 left-0 w-1 h-full bg-rose-500"></div>
+
+                <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+
+                    <span class="font-semibold uppercase tracking-wider flex items-center gap-1.5 text-rose-400">
+                        <i class="fas fa-temperature-high"></i>
+                        Temperature
+                    </span>
+
+                    <span class="font-mono text-[11px] bg-rose-950/60 text-rose-300 px-1.5 py-0.5 rounded border border-rose-800/40">
+                        Pt100 RTD
+                    </span>
+
+                </div>
+
+                <div class="flex items-baseline gap-2 my-1">
+
+                    <span
+                        id="val-temp-corr"
+                        class="text-3xl font-extrabold text-white font-mono tracking-tight">
+                        --.-
+                    </span>
+
+                    <span class="text-base font-bold text-gray-400">
+                        °C
+                    </span>
+
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-400 pt-2 border-t border-gray-800 mt-2">
+
+                    <div>
+                        Raw:
+                        <span id="val-temp-raw" class="font-mono text-gray-200">
+                            --.- °C
+                        </span>
+                    </div>
+
+                    <div>
+                        Bias:
+                        <span id="val-temp-bias" class="font-mono text-amber-400 font-bold">
+                            0.00 °C
+                        </span>
+                    </div>
+
+                    <div class="col-span-2 text-[10px]">
+                        95% CI:
+                        <span id="val-temp-ci" class="font-mono text-cyan-300">
+                            [--, --]
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Pressure Card -->
+            <div class="glass-card p-4 rounded-xl relative overflow-hidden group">
+
+                <div class="absolute top-0 left-0 w-1 h-full bg-cyan-500"></div>
+
+                <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+
+                    <span class="font-semibold uppercase tracking-wider flex items-center gap-1.5 text-cyan-400">
+                        <i class="fas fa-gauge-high"></i>
+                        Barometric Pressure
+                    </span>
+
+                    <span class="font-mono text-[11px] bg-cyan-950/60 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-800/40">
+                        Sensor 150
+                    </span>
+
+                </div>
+
+                <div class="flex items-baseline gap-2 my-1">
+
+                    <span
+                        id="val-pres-corr"
+                        class="text-3xl font-extrabold text-white font-mono tracking-tight">
+                        --.-
+                    </span>
+
+                    <span class="text-base font-bold text-gray-400">
+                        hPa
+                    </span>
+
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-400 pt-2 border-t border-gray-800 mt-2">
+
+                    <div>
+                        Raw:
+                        <span id="val-pres-raw" class="font-mono text-gray-200">
+                            --.- hPa
+                        </span>
+                    </div>
+
+                    <div>
+                        Bias:
+                        <span id="val-pres-bias" class="font-mono text-amber-400 font-bold">
+                            0.00 hPa
+                        </span>
+                    </div>
+
+                    <div class="col-span-2 text-[10px]">
+                        95% CI:
+                        <span id="val-pres-ci" class="font-mono text-cyan-300">
+                            [--, --]
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Humidity Card -->
+            <div class="glass-card p-4 rounded-xl relative overflow-hidden group">
+
+                <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+
+                <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+
+                    <span class="font-semibold uppercase tracking-wider flex items-center gap-1.5 text-blue-400">
+                        <i class="fas fa-droplet"></i>
+                        Relative Humidity
+                    </span>
+
+                    <span class="font-mono text-[11px] bg-blue-950/60 text-blue-300 px-1.5 py-0.5 rounded border border-blue-800/40">
+                        Td Physical
+                    </span>
+
+                </div>
+
+                <div class="flex items-baseline gap-2 my-1">
+
+                    <span
+                        id="val-rh-corr"
+                        class="text-3xl font-extrabold text-white font-mono tracking-tight">
+                        --.-
+                    </span>
+
+                    <span class="text-base font-bold text-gray-400">
+                        %
+                    </span>
+
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-400 pt-2 border-t border-gray-800 mt-2">
+
+                    <div>
+                        Raw:
+                        <span id="val-rh-raw" class="font-mono text-gray-200">
+                            --.- %
+                        </span>
+                    </div>
+
+                    <div>
+                        Bias:
+                        <span id="val-rh-bias" class="font-mono text-amber-400 font-bold">
+                            0.00 %
+                        </span>
+                    </div>
+
+                    <div class="col-span-2 text-[10px]">
+                        95% CI:
+                        <span id="val-rh-ci" class="font-mono text-cyan-300">
+                            [--, --]
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Wind Speed Card -->
+            <div class="glass-card p-4 rounded-xl relative overflow-hidden group">
+
+                <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+
+                <div class="flex items-center justify-between text-xs text-gray-400 mb-1">
+
+                    <span class="font-semibold uppercase tracking-wider flex items-center gap-1.5 text-emerald-400">
+                        <i class="fas fa-wind"></i>
+                        Wind Speed
+                    </span>
+
+                    <span class="font-mono text-[11px] bg-emerald-950/60 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-800/40">
+                        Cup Speed
+                    </span>
+
+                </div>
+
+                <div class="flex items-baseline gap-2 my-1">
+
+                    <span
+                        id="val-wind-corr"
+                        class="text-3xl font-extrabold text-white font-mono tracking-tight">
+                        --.-
+                    </span>
+
+                    <span class="text-base font-bold text-gray-400">
+                        m/s
+                    </span>
+
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-400 pt-2 border-t border-gray-800 mt-2">
+
+                    <div>
+                        Raw:
+                        <span id="val-wind-raw" class="font-mono text-gray-200">
+                            --.- m/s
+                        </span>
+                    </div>
+
+                    <div>
+                        Bias:
+                        <span id="val-wind-bias" class="font-mono text-amber-400 font-bold">
+                            0.00 m/s
+                        </span>
+                    </div>
+
+                    <div class="col-span-2 text-[10px]">
+                        95% CI:
+                        <span id="val-wind-ci" class="font-mono text-cyan-300">
+                            [--, --]
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================= -->
+        <!-- LIVE TELEMETRY TIME SERIES CHARTS -->
+        <!-- ========================================================= -->
+
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+
+            <!-- Temperature -->
+            <div class="glass-card p-4 rounded-xl telemetry-chart-card">
+
+                <h3 class="text-xs font-bold text-gray-200 mb-3 flex items-center gap-2">
+
+                    <i class="fas fa-chart-line text-rose-400"></i>
+
+                    Temperature Drift & Bias Adaptation
+
+                </h3>
+
+                <div class="telemetry-chart-container">
+                    <canvas id="chart-temp"></canvas>
+                </div>
+
+            </div>
+
+
+            <!-- Pressure -->
+            <div class="glass-card p-4 rounded-xl telemetry-chart-card">
+
+                <h3 class="text-xs font-bold text-gray-200 mb-3 flex items-center gap-2">
+
+                    <i class="fas fa-chart-line text-cyan-400"></i>
+
+                    Barometric Pressure Quality
+
+                </h3>
+
+                <div class="telemetry-chart-container">
+                    <canvas id="chart-pres"></canvas>
+                </div>
+
+            </div>
+
+
+            <!-- Humidity -->
+            <div class="glass-card p-4 rounded-xl telemetry-chart-card">
+
+                <h3 class="text-xs font-bold text-gray-200 mb-3 flex items-center gap-2">
+
+                    <i class="fas fa-chart-line text-blue-400"></i>
+
+                    Humidity (Td Physics Constraint)
+
+                </h3>
+
+                <div class="telemetry-chart-container">
+                    <canvas id="chart-rh"></canvas>
+                </div>
+
+            </div>
+
+
+            <!-- Wind -->
+            <div class="glass-card p-4 rounded-xl telemetry-chart-card">
+
+                <h3 class="text-xs font-bold text-gray-200 mb-3 flex items-center gap-2">
+
+                    <i class="fas fa-chart-line text-emerald-400"></i>
+
+                    Wind Speed Bounds & Variance
+
+                </h3>
+
+                <div class="telemetry-chart-container">
+                    <canvas id="chart-wind"></canvas>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================= -->
+        <!-- DUAL AXIS + STATION NETWORK MAP -->
+        <!-- ========================================================= -->
+
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+
+            <!-- Dual Axis Chart -->
+            <div class="glass-card p-4 rounded-xl lg:col-span-2">
+
+                <h3 class="text-xs font-bold text-gray-200 mb-3 flex items-center gap-2">
+
+                    <i class="fas fa-chart-line text-amber-400"></i>
+
+                    Dual-Axis Comparison:
+                    Temperature vs Pressure
+
+                </h3>
+
+                <div class="dual-chart-container">
+                    <canvas id="chart-dual-axis"></canvas>
+                </div>
+
+            </div>
+
+
+            <!-- Station Network Map -->
+            <div class="glass-card p-4 rounded-xl overflow-hidden">
+
+                <div class="flex items-center justify-between mb-3">
+
+                    <h3 class="text-sm font-bold text-gray-100 flex items-center gap-2">
+
+                        <i class="fas fa-map text-cyan-400"></i>
+
+                        Station Network Map
+
+                    </h3>
+
+                    <span class="text-[10px] text-gray-400">
+                        4 Active Nodes
+                    </span>
+
+                </div>
+
+                <div
+                    id="map"
+                    class="rounded-lg border border-gray-700/50 overflow-hidden">
+                </div>
+
+                <div class="mt-2 text-[11px] text-gray-400">
+                    Click stations to switch telemetry
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================= -->
+        <!-- SENSOR HEALTH DIAGNOSTICS -->
+        <!-- ========================================================= -->
+
+
+        <!-- ========================================================= -->
+        <!-- REGIONAL EVENT CORROBORATION & EVENT REPLAY -->
+        <!-- Added from SIH regional-event feature build -->
+        <!-- ========================================================= -->
+        <section class="glass-card rounded-xl p-4 border border-gray-800 regional-event-shell">
+
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div>
+                    <h3 class="text-sm font-bold text-gray-100 flex items-center gap-2">
+                        <i class="fas fa-cloud-bolt regional-event-icon"></i>
+                        Regional Event Corroboration
+                    </h3>
+                    <p class="text-[10px] text-gray-400 mt-1">
+                        Spatially compare nearby stations to distinguish a regional weather event from an isolated sensor fault.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button id="regional-event-btn"
+                        class="px-3 py-1.5 rounded-lg text-white text-xs font-semibold transition scenario-action-regional">
+                        <i class="fas fa-wind mr-1"></i> Simulate Regional Event
+                    </button>
+                    <button id="sensor-fault-btn"
+                        class="px-3 py-1.5 rounded-lg text-white text-xs font-semibold transition scenario-action-fault">
+                        <i class="fas fa-screwdriver-wrench mr-1"></i> Simulate Sensor Fault
+                    </button>
+                    <button id="regional-reset-btn"
+                        class="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-semibold border border-gray-700 transition">
+                        <i class="fas fa-rotate-left mr-1"></i> Reset Scenario
+                    </button>
+                    <button id="regional-replay-btn"
+                        class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition">
+                        <i class="fas fa-play mr-1"></i> Replay Last Event
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+                <div class="bg-gray-900/50 border border-gray-800 rounded-lg p-3">
+                    <div class="text-[10px] uppercase tracking-wider text-gray-500">Scenario Status</div>
+                    <div id="regional-status" class="text-lg font-extrabold text-emerald-400 mt-1">NORMAL</div>
+                    <div id="regional-status-sub" class="text-[10px] text-gray-400 mt-1">No regional corroboration detected</div>
+                </div>
+                <div class="bg-gray-900/50 border border-gray-800 rounded-lg p-3">
+                    <div class="text-[10px] uppercase tracking-wider text-gray-500">AI Anomaly Score</div>
+                    <div id="regional-score" class="text-lg font-extrabold text-cyan-300 mt-1">12%</div>
+                    <div class="h-1.5 bg-gray-800 rounded-full mt-2 overflow-hidden"><div id="regional-score-bar" class="h-full bg-cyan-500 rounded-full transition-all" style="width:12%"></div></div>
+                </div>
+                <div class="bg-gray-900/50 border border-gray-800 rounded-lg p-3">
+                    <div class="text-[10px] uppercase tracking-wider text-gray-500">Spatial Agreement</div>
+                    <div id="regional-spatial" class="text-lg font-extrabold text-cyan-300 mt-1">0%</div>
+                    <div class="text-[10px] text-gray-400 mt-1">Nearby station correlation</div>
+                </div>
+                <div class="bg-gray-900/50 border border-gray-800 rounded-lg p-3">
+                    <div class="text-[10px] uppercase tracking-wider text-gray-500">Decision</div>
+                    <div id="regional-decision" class="text-sm font-extrabold text-gray-200 mt-2">NORMAL CONDITIONS</div>
+                    <div id="regional-confidence" class="text-[10px] text-gray-400 mt-1">Confidence: 12%</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div class="bg-gray-900/40 border border-gray-800 rounded-lg p-3">
+                    <div class="text-xs font-bold text-gray-200 mb-2">Explainable Decision Factors</div>
+                    <div id="regional-reasons" class="space-y-1.5 text-[11px] text-gray-400">
+                        <div>✓ Wind pattern within expected range</div>
+                        <div>✓ Pressure trend stable</div>
+                        <div>✓ Nearby stations agree</div>
+                        <div>✓ No multi-parameter anomaly</div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-900/40 border border-gray-800 rounded-lg p-3">
+                    <div class="text-xs font-bold text-gray-200 mb-2">Event Fingerprint</div>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="rounded border border-gray-800 p-2"><div class="text-[10px] text-gray-500">Wind</div><div id="regional-wind-trend" class="text-xs font-bold text-emerald-400 mt-1">Stable</div></div>
+                        <div class="rounded border border-gray-800 p-2"><div class="text-[10px] text-gray-500">Pressure</div><div id="regional-pressure-trend" class="text-xs font-bold text-emerald-400 mt-1">Stable</div></div>
+                        <div class="rounded border border-gray-800 p-2"><div class="text-[10px] text-gray-500">Humidity</div><div id="regional-humidity-trend" class="text-xs font-bold text-emerald-400 mt-1">Stable</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic scenario graph panel: opens from Regional Event / Sensor Fault buttons -->
+            <div id="scenario-graph-panel" class="mt-4 hidden scenario-graph-panel">
+                <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <div>
+                        <div id="scenario-graph-title" class="text-sm font-bold text-gray-100">Scenario Analysis</div>
+                        <div id="scenario-graph-subtitle" class="text-[10px] text-gray-400 mt-1">Select a scenario to visualize its progression.</div>
+                    </div>
+                    <button id="scenario-graph-close" type="button" class="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-[11px] border border-gray-700">Close graphs</button>
+                </div>
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                    <div class="scenario-chart-card">
+                        <div id="scenario-chart-one-title" class="text-[11px] font-semibold text-gray-300 mb-2">Anomaly progression</div>
+                        <div class="scenario-chart-wrap"><canvas id="scenario-chart-one"></canvas></div>
+                    </div>
+                    <div class="scenario-chart-card">
+                        <div id="scenario-chart-two-title" class="text-[11px] font-semibold text-gray-300 mb-2">Station/sensor consistency</div>
+                        <div class="scenario-chart-wrap"><canvas id="scenario-chart-two"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 bg-gray-900/40 border border-gray-800 rounded-lg p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-xs font-bold text-gray-200">Event Replay Timeline</div>
+                    <div id="regional-replay-text" class="text-[10px] text-gray-400">Press Replay Last Event to visualize anomaly evolution.</div>
+                </div>
+                <div id="regional-timeline" class="flex gap-2 overflow-x-auto pb-1"></div>
+                <div class="relative h-1 bg-gray-800 rounded-full mt-3">
+                    <div id="regional-replay-line" class="absolute left-0 top-0 h-full bg-cyan-500 rounded-full transition-all" style="width:0%"></div>
+                    <div id="regional-replay-dot" class="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-cyan-400 border-2 border-gray-950 transition-all" style="left:0%"></div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+
+            <div class="flex items-center justify-between mb-4">
+
+                <h3 class="text-sm font-bold text-gray-100 flex items-center gap-2">
+
+                    <i class="fas fa-stethoscope text-amber-400"></i>
+
+                    Sensor Health Diagnostics &
+                    Predictive Maintenance
+
+                </h3>
+
+                <span class="text-[10px] text-gray-400 font-mono">
+                    RUL = Remaining Useful Life
+                </span>
+
+            </div>
+
+
+            <div
+                id="health-cards-grid"
+                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                <!-- Populated dynamically -->
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ========================================================= -->
+        <!-- SENSOR HEALTH & FAULT ISOLATION -->
+        <!-- ========================================================= -->
+        <section class="glass-card rounded-xl overflow-hidden border border-gray-800">
+
+            <div class="p-4 bg-gray-900/60 border-b border-gray-800 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                    <h3 class="text-sm font-bold text-gray-100 flex items-center gap-2">
+                        <i class="fas fa-heart-pulse text-rose-400"></i>
+                        Sensor Health & Fault Isolation
+                    </h3>
+                    <p class="text-[10px] text-gray-400 mt-1">Combines sensor-health diagnostics with spatial consistency to identify likely local faults.</p>
+                </div>
+                <span class="text-[10px] text-gray-500">Live health API + regional scenario layer</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-gray-900/90 text-gray-400 text-[10px] uppercase tracking-wider border-b border-gray-800">
+                        <tr>
+                            <th class="p-3">Station</th>
+                            <th class="p-3">Health</th>
+                            <th class="p-3">Telemetry Quality</th>
+                            <th class="p-3">Spatial Consistency</th>
+                            <th class="p-3">Diagnosis</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sensor-health-isolation-body" class="divide-y divide-gray-800/60">
+                        <tr><td colspan="5" class="p-4 text-center text-xs text-gray-500">Loading sensor health diagnostics…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- ACTIONABLE ANOMALY ALERTS LOG -->
+        <!-- ========================================================= -->
+
+        <section class="glass-card rounded-xl overflow-hidden border border-gray-800">
+
+            <div class="p-4 bg-gray-900/60 border-b border-gray-800 flex flex-wrap items-center justify-between gap-4">
+
+                <div class="flex items-center gap-3">
+
+                    <h3 class="text-sm font-bold text-gray-100 flex items-center gap-2">
+
+                        <i class="fas fa-triangle-exclamation text-amber-400"></i>
+
+                        Actionable Anomaly Alerts Log
+
+                    </h3>
+
+                    <span
+                        id="alerts-total-badge"
+                        class="px-2 py-0.5 rounded-full text-xs font-bold bg-gray-800 text-cyan-300 border border-gray-700">
+                        0
+                    </span>
+
+                </div>
+
+
+                <!-- Filters -->
+                <div class="flex items-center flex-wrap gap-2">
+
+                    <div class="flex items-center bg-gray-800 p-0.5 rounded-lg text-xs">
+
+                        <button
+                            class="filter-sev-btn px-2.5 py-1 rounded font-semibold bg-blue-600 text-white"
+                            data-severity="ALL">
+                            All
+                        </button>
+
+                        <button
+                            class="filter-sev-btn px-2.5 py-1 rounded font-semibold text-gray-300 hover:text-white"
+                            data-severity="CRITICAL">
+                            Critical
+                        </button>
+
+                        <button
+                            class="filter-sev-btn px-2.5 py-1 rounded font-semibold text-gray-300 hover:text-white"
+                            data-severity="WARNING">
+                            Warning
+                        </button>
+
+                        <button
+                            class="filter-sev-btn px-2.5 py-1 rounded font-semibold text-gray-300 hover:text-white"
+                            data-severity="INFO">
+                            Info
+                        </button>
+
+                    </div>
+
+
+                    <!-- Search -->
+                    <div class="relative">
+
+                        <input
+                            id="alert-search-input"
+                            type="text"
+                            placeholder="Search alerts / sensors..."
+                            class="bg-gray-800 text-xs text-gray-200 border border-gray-700 rounded-lg pl-7 pr-3 py-1.5 focus:ring-2 focus:ring-cyan-500 outline-none w-48 lg:w-64">
+
+                        <i class="fas fa-search text-gray-400 text-xs absolute left-2.5 top-2.5"></i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Alerts Table -->
+            <div class="overflow-x-auto max-h-[380px]">
+
+                <table class="w-full text-left border-collapse">
+
+                    <thead class="bg-gray-900/90 text-gray-400 text-[11px] uppercase tracking-wider sticky top-0 z-10 border-b border-gray-800">
+
+                        <tr>
+
+                            <th class="p-3">
+                                Alert ID
+                            </th>
+
+                            <th class="p-3">
+                                Timestamp
+                            </th>
+
+                            <th class="p-3">
+                                Severity
+                            </th>
+
+                            <th class="p-3">
+                                Anomaly Type & Sensors
+                            </th>
+
+                            <th class="p-3">
+                                Raw vs Corrected
+                            </th>
+
+                            <th class="p-3">
+                                Recommended Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        id="alerts-table-body"
+                        class="divide-y divide-gray-800/60">
+
+                        <!-- Populated dynamically -->
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ========================================================= -->
+        <!-- LIVE ANOMALY INJECTION SANDBOX -->
+        <!-- ========================================================= -->
+
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+
+            <!-- Anomaly Injector -->
+            <div class="glass-card p-4 rounded-xl lg:col-span-2">
+
+                <div class="flex items-center justify-between mb-3">
+
+                    <h3 class="text-xs font-bold text-gray-200 flex items-center gap-2">
+
+                        <i class="fas fa-flask text-amber-400"></i>
+
+                        Interactive Anomaly Injection Sandbox
+
+                    </h3>
+
+                    <span class="text-[10px] text-gray-400">
+                        Test real-time pipeline response & Kalman bias adaptation
+                    </span>
+
+                </div>
+
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+
+
+                    <button
+                        onclick="window.injectLiveAnomaly('temp_spike')"
+                        class="p-2.5 rounded-lg bg-gray-800/80 hover:bg-rose-900/60 border border-gray-700 hover:border-rose-600 text-left transition group">
+
+                        <span class="text-xs font-bold text-rose-400 block group-hover:text-rose-200">
+                            +15°C Spike
+                        </span>
+
+                        <span class="text-[10px] text-gray-400">
+                            Transient RTD Jump
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        onclick="window.injectLiveAnomaly('rh_violation')"
+                        class="p-2.5 rounded-lg bg-gray-800/80 hover:bg-blue-900/60 border border-gray-700 hover:border-blue-600 text-left transition group">
+
+                        <span class="text-xs font-bold text-blue-400 block group-hover:text-blue-200">
+                            122% RH Breach
+                        </span>
+
+                        <span class="text-[10px] text-gray-400">
+                            Td > T Physics Error
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        onclick="window.injectLiveAnomaly('bias_jump')"
+                        class="p-2.5 rounded-lg bg-gray-800/80 hover:bg-cyan-900/60 border border-gray-700 hover:border-cyan-600 text-left transition group">
+
+                        <span class="text-xs font-bold text-cyan-400 block group-hover:text-cyan-200">
+                            +8 hPa Bias Jump
+                        </span>
+
+                        <span class="text-[10px] text-gray-400">
+                            Barometer Shift
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        onclick="window.injectLiveAnomaly('wind_negative')"
+                        class="p-2.5 rounded-lg bg-gray-800/80 hover:bg-emerald-900/60 border border-gray-700 hover:border-emerald-600 text-left transition group">
+
+                        <span class="text-xs font-bold text-emerald-400 block group-hover:text-emerald-200">
+                            -6.5 m/s Wind
+                        </span>
+
+                        <span class="text-[10px] text-gray-400">
+                            Negative Bound Error
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- System Performance -->
+            <div class="glass-card p-4 rounded-xl flex flex-col justify-between">
+
+                <div class="flex items-center justify-between mb-2">
+
+                    <h3 class="text-xs font-bold text-gray-200 flex items-center gap-2">
+
+                        <i class="fas fa-microchip text-cyan-400"></i>
+
+                        Pipeline Telemetry Engine
+
+                    </h3>
+
+                    <span class="text-[10px] text-emerald-400 font-mono font-bold">
+                        ACTIVE
+                    </span>
+
+                </div>
+
+
+                <div class="grid grid-cols-2 gap-3 text-xs">
+
+
+                    <div class="bg-gray-900/70 p-2 rounded-lg border border-gray-800">
+
+                        <span class="text-gray-400 text-[10px] block">
+                            Inference Latency
+                        </span>
+
+                        <span
+                            id="metric-latency"
+                            class="font-mono font-bold text-cyan-300">
+                            1.8 ms
+                        </span>
+
+                    </div>
+
+
+                    <div class="bg-gray-900/70 p-2 rounded-lg border border-gray-800">
+
+                        <span class="text-gray-400 text-[10px] block">
+                            Throughput
+                        </span>
+
+                        <span
+                            id="metric-throughput"
+                            class="font-mono font-bold text-emerald-300">
+                            450 rec/s
+                        </span>
+
+                    </div>
+
+
+                    <div class="bg-gray-900/70 p-2 rounded-lg border border-gray-800">
+
+                        <span class="text-gray-400 text-[10px] block">
+                            Inferences Processed
+                        </span>
+
+                        <span
+                            id="metric-inferences"
+                            class="font-mono font-bold text-gray-100">
+                            2,016
+                        </span>
+
+                    </div>
+
+
+                    <div class="bg-gray-900/70 p-2 rounded-lg border border-gray-800">
+
+                        <span class="text-gray-400 text-[10px] block">
+                            System Uptime
+                        </span>
+
+                        <span
+                            id="metric-uptime"
+                            class="font-mono font-bold text-gray-100">
+                            0.0 min
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- ========================================================= -->
+    <!-- FOOTER -->
+    <!-- ========================================================= -->
+
+    <footer class="bg-gray-950 border-t border-gray-800/80 px-4 py-3 text-center text-xs text-gray-500">
+
+        Automatic Weather Station (AWS) Telemetry,
+        Auto-Correction & Anomaly Detection Framework
+        &bull;
+        Powered by State-Space Kalman Filtering & Hybrid ML
+
+    </footer>
+
+
+    <!-- ========================================================= -->
+    <!-- SKYGUARD THEME MANAGER -->
+    <!-- ========================================================= -->
+
+    <script>
+
+        const savedTheme = localStorage.getItem('skyguard-theme');
+
+        if (savedTheme === 'light') {
+
+            document.documentElement.classList.remove('dark');
+
+        } else {
+
+            document.documentElement.classList.add('dark');
+
+        }
+
+
+        function updateThemeIcon() {
+
+            const icon = document.getElementById('theme-icon');
+
+            const button = document.getElementById('theme-toggle');
+
+            if (!icon || !button) return;
+
+            const isDark =
+                document.documentElement.classList.contains('dark');
+
+
+            if (isDark) {
+
+                icon.className =
+                    'fas fa-sun text-amber-400';
+
+                button.title =
+                    'Switch to light theme';
+
+                button.setAttribute(
+                    'aria-label',
+                    'Switch to light theme'
+                );
+
+            } else {
+
+                icon.className =
+                    'fas fa-moon text-indigo-600';
+
+                button.title =
+                    'Switch to dark theme';
+
+                button.setAttribute(
+                    'aria-label',
+                    'Switch to dark theme'
+                );
+
+            }
+
+        }
+
+
+        document
+            .getElementById('theme-toggle')
+            ?.addEventListener('click', () => {
+
+                const html =
+                    document.documentElement;
+
+                html.classList.toggle('dark');
+
+                const isDark =
+                    html.classList.contains('dark');
+
+
+                localStorage.setItem(
+                    'skyguard-theme',
+                    isDark ? 'dark' : 'light'
+                );
+
+
+                updateThemeIcon();
+
+
+                // Tell charts to refresh their colors
+                if (window.awsChartManager?.refreshTheme) {
+
+                    window.awsChartManager.refreshTheme();
+
+                }
+
+
+                // Refresh Leaflet map tiles if required
+                if (window.state?.map) {
+
+                    setTimeout(() => {
+
+                        window.state.map.invalidateSize();
+
+                    }, 200);
+
+                }
+
+            });
+
+
+        updateThemeIcon();
+
+    </script>
+
+
+    <!-- Scripts -->
+    <script src="/static/js/charts.js"></script>
+    <script src="/static/js/dashboard.js"></script>
+
+</body>
+</html>

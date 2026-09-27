@@ -1,0 +1,965 @@
+/* AWS Meteorology Dark Glassmorphism Theme */
+
+:root {
+  --bg-main: #0b0f19;
+  --bg-card: rgba(17, 24, 39, 0.85);
+  --bg-card-hover: rgba(31, 41, 55, 0.95);
+  --border-card: rgba(255, 255, 255, 0.08);
+  --accent-cyan: #06b6d4;
+  --accent-blue: #3b82f6;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: #f3f4f6;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism Card Style */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-card);
+  border-radius: 0.85rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  transition: all 0.25s ease-in-out;
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Pulsing Badge Animations */
+@keyframes pulse-red {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+}
+
+.badge-critical {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  animation: pulse-red 2s infinite;
+}
+
+.badge-warning {
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+}
+
+.badge-info {
+  background-color: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(14, 165, 233, 0.5);
+}
+
+.badge-healthy {
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+/* Custom Gauge & Radial Progress */
+.gauge-ring-bg {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.gauge-ring-progress {
+  transition: stroke-dashoffset 0.6s ease-in-out, stroke 0.3s ease;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+/* Map Container */
+#map {
+  height: 280px;
+  width: 100%;
+  border-radius: 0.65rem;
+  z-index: 10;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(17, 24, 39, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.6);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.8);
+}
+
+/* Tab Navigation */
+.tab-btn.active {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border-bottom: 2px solid #3b82f6;
+}
+
+/* ===== FIX CHART HEIGHTS ===== */
+
+.telemetry-chart-card {
+    height: 320px !important;
+    overflow: hidden;
+}
+
+.telemetry-chart-container {
+    position: relative;
+    width: 100%;
+    height: 250px !important;
+}
+
+.telemetry-chart-container canvas {
+    width: 100% !important;
+    height: 250px !important;
+}
+
+/* ===== DUAL AXIS ===== */
+
+.dual-chart-container {
+    position: relative;
+    width: 100%;
+    height: 275px !important;
+}
+
+.dual-chart-container canvas {
+    width: 100% !important;
+    height: 275px !important;
+}
+
+/* ===== MAP ===== */
+
+#map {
+    width: 100% !important;
+    height: 280px !important;
+    min-height: 280px !important;
+    max-height: 280px !important;
+}
+
+/* =========================================================
+   SKYGUARD PHYSIOSENSE - PROFESSIONAL LIGHT THEME
+   Scientific Weather / Meteorological Operations Palette
+   ========================================================= */
+
+html:not(.dark) body {
+    background: #f1f7fa !important;
+    color: #12304a !important;
+}
+
+/* Main application background */
+html:not(.dark) main {
+    background: #f1f7fa !important;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+html:not(.dark) header {
+    background: rgba(255, 255, 255, 0.96) !important;
+    border-color: #c9dce7 !important;
+    color: #12304a !important;
+    box-shadow: 0 2px 12px rgba(18, 48, 74, 0.06);
+}
+
+/* Project title */
+html:not(.dark) header h1 {
+    color: #12304a !important;
+}
+
+/* Subtitle */
+html:not(.dark) header p {
+    color: #526579 !important;
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+html:not(.dark) .glass-card {
+    background: #ffffff !important;
+    border: 1px solid #c9dce7 !important;
+
+    box-shadow:
+        0 4px 16px rgba(18, 48, 74, 0.055),
+        0 1px 3px rgba(18, 48, 74, 0.04) !important;
+
+    backdrop-filter: none !important;
+}
+
+html:not(.dark) .glass-card:hover {
+    border-color: #8ecddd !important;
+
+    box-shadow:
+        0 6px 22px rgba(8, 145, 178, 0.10) !important;
+}
+
+
+/* =========================================================
+   TYPOGRAPHY
+   ========================================================= */
+
+html:not(.dark) h1,
+html:not(.dark) h2,
+html:not(.dark) h3,
+html:not(.dark) h4,
+html:not(.dark) h5 {
+    color: #12304a !important;
+}
+
+html:not(.dark) .text-gray-100 {
+    color: #12304a !important;
+}
+
+html:not(.dark) .text-gray-200 {
+    color: #263f56 !important;
+}
+
+html:not(.dark) .text-gray-300 {
+    color: #405a70 !important;
+}
+
+html:not(.dark) .text-gray-400 {
+    color: #60778a !important;
+}
+
+html:not(.dark) .text-gray-500 {
+    color: #70879a !important;
+}
+
+html:not(.dark) .text-white {
+    color: #12304a !important;
+}
+
+
+/* =========================================================
+   BORDERS
+   ========================================================= */
+
+html:not(.dark) .border-gray-700,
+html:not(.dark) .border-gray-800,
+html:not(.dark) .border-gray-800\/60,
+html:not(.dark) .border-gray-800\/80 {
+    border-color: #c9dce7 !important;
+}
+
+
+/* =========================================================
+   CONTROLS
+   ========================================================= */
+
+html:not(.dark) .bg-gray-800,
+html:not(.dark) .bg-gray-800\/90,
+html:not(.dark) .bg-gray-800\/80 {
+    background-color: #ffffff !important;
+    color: #29445b !important;
+    border-color: #c9dce7 !important;
+}
+
+html:not(.dark) button {
+    color: #29445b;
+}
+
+html:not(.dark) button:hover {
+    background-color: #e8f3f7 !important;
+}
+
+
+/* =========================================================
+   STATION SELECTOR
+   ========================================================= */
+
+html:not(.dark) #station-select {
+    background: #ffffff !important;
+    color: #12304a !important;
+    border-color: #8ecddd !important;
+}
+
+html:not(.dark) #station-select:focus {
+    border-color: #0891b2 !important;
+    box-shadow: 0 0 0 2px rgba(8, 145, 178, 0.15) !important;
+}
+
+
+/* =========================================================
+   THEME TOGGLE
+   ========================================================= */
+
+html:not(.dark) #theme-toggle {
+    background: #ffffff !important;
+    border-color: #c9dce7 !important;
+    color: #12304a !important;
+}
+
+html:not(.dark) #theme-toggle:hover {
+    background: #e8f3f7 !important;
+    border-color: #8ecddd !important;
+}
+
+
+/* =========================================================
+   INPUT FIELDS
+   ========================================================= */
+
+html:not(.dark) input,
+html:not(.dark) select {
+    background-color: #ffffff !important;
+    color: #12304a !important;
+    border-color: #c9dce7 !important;
+}
+
+html:not(.dark) input:focus,
+html:not(.dark) select:focus {
+    border-color: #0891b2 !important;
+    box-shadow: 0 0 0 2px rgba(8, 145, 178, 0.12) !important;
+}
+
+html:not(.dark) input::placeholder {
+    color: #8aa0b0 !important;
+}
+
+
+/* =========================================================
+   INNER PANELS
+   ========================================================= */
+
+html:not(.dark) .bg-gray-900,
+html:not(.dark) .bg-gray-900\/70,
+html:not(.dark) .bg-gray-900\/60,
+html:not(.dark) .bg-gray-900\/90 {
+    background-color: #eef5f8 !important;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+html:not(.dark) thead {
+    background: #e7f2f6 !important;
+    color: #466176 !important;
+}
+
+html:not(.dark) tbody tr:hover {
+    background: #f3f9fb !important;
+}
+
+html:not(.dark) .divide-gray-800\/60 > :not([hidden]) ~ :not([hidden]) {
+    border-color: #d8e6ed !important;
+}
+
+
+/* =========================================================
+   HEALTHY STATUS BADGE
+   ========================================================= */
+
+html:not(.dark) .badge-healthy {
+    background: #ecfdf5 !important;
+    color: #047857 !important;
+    border-color: #86efac !important;
+}
+
+
+/* =========================================================
+   INFO STATUS
+   ========================================================= */
+
+html:not(.dark) .badge-info {
+    background: #eff6ff !important;
+    color: #1d4ed8 !important;
+    border-color: #93c5fd !important;
+}
+
+
+/* =========================================================
+   WARNING STATUS
+   ========================================================= */
+
+html:not(.dark) .badge-warning {
+    background: #fffbeb !important;
+    color: #b45309 !important;
+    border-color: #fcd34d !important;
+}
+
+
+/* =========================================================
+   CRITICAL STATUS
+   ========================================================= */
+
+html:not(.dark) .badge-critical {
+    background: #fef2f2 !important;
+    color: #b91c1c !important;
+    border-color: #fca5a5 !important;
+}
+
+
+/* =========================================================
+   SKYGUARD STATUS BANNER
+   ========================================================= */
+
+html:not(.dark) #anomaly-status-banner {
+    background: linear-gradient(
+        90deg,
+        #e7f8fc 0%,
+        #f4fbfd 100%
+    ) !important;
+
+    color: #075985 !important;
+
+    border: 1px solid #8ed3e3 !important;
+
+    box-shadow:
+        0 3px 12px rgba(8, 145, 178, 0.08) !important;
+}
+
+html:not(.dark) #anomaly-status-banner .status-dot {
+    background: #0891b2 !important;
+}
+
+html:not(.dark) #anomaly-status-banner .status-message {
+    color: #075985 !important;
+}
+
+html:not(.dark) #anomaly-status-banner .status-time {
+    color: #527489 !important;
+}
+
+
+/* =========================================================
+   MAP
+   ========================================================= */
+
+html:not(.dark) #map {
+    border-color: #b9d2df !important;
+}
+
+
+/* =========================================================
+   MONOSPACE SENSOR VALUES
+   ========================================================= */
+
+html:not(.dark) .font-mono {
+    color: #29445b;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+html:not(.dark) ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+html:not(.dark) ::-webkit-scrollbar-track {
+    background: #e7f0f4;
+}
+
+html:not(.dark) ::-webkit-scrollbar-thumb {
+    background: #a9c2cf;
+    border-radius: 10px;
+}
+
+html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+    background: #7fa6b8;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+html:not(.dark) footer {
+    background: #ffffff !important;
+    border-color: #c9dce7 !important;
+    color: #527489 !important;
+}
+
+
+/* =========================================================
+   CYAN PROJECT ACCENT
+   ========================================================= */
+
+html:not(.dark) .text-cyan-300 {
+    color: #0891b2 !important;
+}
+
+html:not(.dark) .text-cyan-400 {
+    color: #0891b2 !important;
+}
+
+html:not(.dark) .text-cyan-500 {
+    color: #0891b2 !important;
+}
+
+
+/* =========================================================
+   RED PROJECT ACCENT
+   ========================================================= */
+
+html:not(.dark) .text-red-300 {
+    color: #ad1313 !important;
+}
+
+html:not(.dark) .text-red-400 {
+    color: #ad1313 !important;
+}
+
+html:not(.dark) .text-red-500 {
+    color: #ad1313 !important;
+}
+
+
+/* =========================================================
+   EMERALD PROJECT ACCENT
+   ========================================================= */
+
+html:not(.dark) .text-emerald-300 {
+    color: #059669 !important;
+}
+
+html:not(.dark) .text-emerald-400 {
+    color: #059669 !important;
+}
+
+html:not(.dark) .text-emerald-500 {
+    color: #059669 !important;
+}
+
+/* =========================================================
+   DYNAMIC ANOMALY STATUS BANNER
+   ========================================================= */
+
+/* -------------------------
+   HEALTHY
+   ------------------------- */
+
+.status-healthy {
+    background: linear-gradient(
+        90deg,
+        #e7f8fc,
+        #f4fbfd
+    ) !important;
+
+    color: #075985 !important;
+
+    border: 1px solid #8ed3e3 !important;
+
+    box-shadow:
+        0 3px 12px rgba(8, 145, 178, 0.08);
+}
+
+.status-dot-healthy {
+    background: #0891b2 !important;
+}
+
+
+/* -------------------------
+   WARNING
+   ------------------------- */
+
+.status-warning {
+    background: linear-gradient(
+        90deg,
+        #fff8e6,
+        #fffbf2
+    ) !important;
+
+    color: #92400e !important;
+
+    border: 1px solid #f4c66a !important;
+}
+
+.status-dot-warning {
+    background: #d97706 !important;
+}
+
+
+/* -------------------------
+   CRITICAL
+   ------------------------- */
+
+.status-critical {
+    background: linear-gradient(
+        90deg,
+        #fff1f2,
+        #fff8f8
+    ) !important;
+
+    color: #991b1b !important;
+
+    border: 1px solid #f3a5a5 !important;
+}
+
+.status-dot-critical {
+    background: #dc2626 !important;
+}
+
+
+/* -------------------------
+   DARK THEME
+   ------------------------- */
+
+html.dark .status-healthy {
+    background: rgba(6, 78, 59, 0.35) !important;
+    color: #6ee7b7 !important;
+    border-color: rgba(16, 185, 129, 0.45) !important;
+}
+
+html.dark .status-dot-healthy {
+    background: #34d399 !important;
+}
+
+
+html.dark .status-warning {
+    background: rgba(120, 53, 15, 0.35) !important;
+    color: #fcd34d !important;
+    border-color: rgba(245, 158, 11, 0.45) !important;
+}
+
+html.dark .status-dot-warning {
+    background: #f59e0b !important;
+}
+
+
+html.dark .status-critical {
+    background: rgba(127, 29, 29, 0.40) !important;
+    color: #fca5a5 !important;
+    border-color: rgba(239, 68, 68, 0.50) !important;
+}
+
+html.dark .status-dot-critical {
+    background: #f87171 !important;
+}
+/* =========================================================
+   LIGHT THEME - TEXT VISIBILITY FIX
+   ========================================================= */
+
+html:not(.dark) .glass-card {
+    color: #12304a !important;
+}
+
+/* All normal text inside cards */
+html:not(.dark) .glass-card .text-gray-100 {
+    color: #12304a !important;
+}
+
+html:not(.dark) .glass-card .text-gray-200 {
+    color: #1e3a52 !important;
+}
+
+html:not(.dark) .glass-card .text-gray-300 {
+    color: #38566d !important;
+}
+
+html:not(.dark) .glass-card .text-gray-400 {
+    color: #5b7183 !important;
+}
+
+html:not(.dark) .glass-card .text-gray-500 {
+    color: #718797 !important;
+}
+
+/* Main sensor values */
+html:not(.dark) .glass-card .text-white {
+    color: #102a43 !important;
+}
+
+/* Sensor value units */
+html:not(.dark) .glass-card span.text-base {
+    color: #526b7e !important;
+}
+
+/* Sensor labels */
+html:not(.dark) .glass-card .uppercase {
+    color: #12304a;
+}
+
+/* Sensor small information text */
+html:not(.dark) .glass-card .font-mono {
+    color: #294b63 !important;
+}
+
+/* =========================================================
+   SENSOR TYPE BADGES
+   ========================================================= */
+
+html:not(.dark) .glass-card .bg-rose-950\/60 {
+    background: #fce7eb !important;
+    color: #9f1239 !important;
+    border-color: #f5a8b8 !important;
+}
+
+html:not(.dark) .glass-card .bg-cyan-950\/60 {
+    background: #e0f7fa !important;
+    color: #0e7490 !important;
+    border-color: #8bd3df !important;
+}
+
+html:not(.dark) .glass-card .bg-blue-950\/60 {
+    background: #e8efff !important;
+    color: #3730a3 !important;
+    border-color: #a5bdf5 !important;
+}
+
+html:not(.dark) .glass-card .bg-emerald-950\/60 {
+    background: #e6f7f0 !important;
+    color: #047857 !important;
+    border-color: #8bd8bd !important;
+}
+
+
+/* =========================================================
+   BIAS VALUES
+   ========================================================= */
+
+html:not(.dark) .text-amber-400 {
+    color: #b45309 !important;
+}
+
+
+/* =========================================================
+   CHART HEADINGS
+   ========================================================= */
+
+html:not(.dark) .telemetry-chart-card h3 {
+    color: #12304a !important;
+}
+
+
+/* =========================================================
+   ALERT TABLE TEXT
+   ========================================================= */
+
+html:not(.dark) table {
+    color: #183b55 !important;
+}
+
+html:not(.dark) table td {
+    color: #294b63 !important;
+}
+
+html:not(.dark) table th {
+    color: #526b7e !important;
+}
+
+html:not(.dark) table .text-white {
+    color: #12304a !important;
+}
+
+html:not(.dark) table .text-gray-100 {
+    color: #12304a !important;
+}
+
+html:not(.dark) table .text-gray-200 {
+    color: #294b63 !important;
+}
+
+html:not(.dark) table .text-gray-300 {
+    color: #466277 !important;
+}
+
+html:not(.dark) table .text-gray-400 {
+    color: #60788a !important;
+}
+
+
+/* =========================================================
+   ANOMALY INJECTION BUTTONS
+   ========================================================= */
+
+html:not(.dark) .group {
+    color: #12304a;
+}
+
+html:not(.dark) .group .text-gray-400 {
+    color: #60788a !important;
+}
+
+html:not(.dark) .group:hover .text-gray-400 {
+    color: #405b70 !important;
+}
+
+
+/* =========================================================
+   PIPELINE TELEMETRY BOXES
+   ========================================================= */
+
+html:not(.dark) .bg-gray-900\/70 {
+    background: #eef5f8 !important;
+    border-color: #c9dce7 !important;
+}
+
+html:not(.dark) .bg-gray-900\/70 .text-gray-400 {
+    color: #60788a !important;
+}
+
+html:not(.dark) .bg-gray-900\/70 .text-gray-100 {
+    color: #12304a !important;
+}
+
+
+/* =========================================================
+   ALERT FILTER BUTTONS
+   ========================================================= */
+
+html:not(.dark) .filter-sev-btn:not(.bg-blue-600) {
+    color: #405b70 !important;
+}
+
+html:not(.dark) .filter-sev-btn:hover {
+    color: #12304a !important;
+    background: #e5f1f5 !important;
+}
+
+
+/* =========================================================
+   SEARCH INPUT
+   ========================================================= */
+
+html:not(.dark) #alert-search-input {
+    color: #12304a !important;
+    background: #ffffff !important;
+}
+
+html:not(.dark) #alert-search-input::placeholder {
+    color: #7890a0 !important;
+}
+
+
+/* =========================================================
+   STATUS BANNER
+   ========================================================= */
+
+html:not(.dark) #anomaly-status-banner {
+    color: #075985 !important;
+}
+
+html:not(.dark) #anomaly-status-banner .status-message {
+    color: #075985 !important;
+}
+
+html:not(.dark) #anomaly-status-banner .status-time {
+    color: #527489 !important;
+}
+
+
+/* =========================================================
+   NAVIGATION CONTROLS
+   ========================================================= */
+
+html:not(.dark) header button,
+html:not(.dark) header select {
+    color: #29445b !important;
+}
+
+html:not(.dark) header button:hover {
+    color: #12304a !important;
+}
+
+
+/* =========================================================
+   EXPORT BUTTONS
+   ========================================================= */
+
+html:not(.dark) header a {
+    color: #405b70 !important;
+}
+
+html:not(.dark) header a:hover {
+    color: #12304a !important;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+html:not(.dark) footer {
+    color: #60788a !important;
+}
+
+/* Dynamic Regional Event / Sensor Fault graphs */
+.scenario-graph-panel {
+    border: 1px solid rgba(6,182,212,.25);
+    border-radius: 12px;
+    padding: 14px;
+    background: rgba(2,8,23,.42);
+    box-shadow: 0 10px 30px rgba(0,0,0,.14);
+}
+.scenario-chart-card {
+    border: 1px solid rgba(148,163,184,.14);
+    border-radius: 10px;
+    padding: 12px;
+    background: rgba(15,23,42,.45);
+}
+.scenario-chart-wrap { position: relative; height: 260px; }
+html:not(.dark) .scenario-graph-panel { background:#f4f9fb !important; border-color:#b9d2df !important; }
+html:not(.dark) .scenario-chart-card { background:#fff !important; border-color:#c9dce7 !important; }
+html:not(.dark) #scenario-graph-title, html:not(.dark) #scenario-chart-one-title, html:not(.dark) #scenario-chart-two-title { color:#12304a !important; }
+
+/* =========================================================
+   REGIONAL EVENT / SENSOR FAULT THEME-AWARE UI
+   ========================================================= */
+.regional-event-shell {
+    border-color: rgba(34,211,238,.22) !important;
+}
+.regional-event-icon { color: #22d3ee !important; }
+.scenario-action-regional {
+    background: #0891b2 !important;
+    color: #fff !important;
+}
+.scenario-action-regional:hover { background: #0e7490 !important; }
+.scenario-action-fault {
+    background: #d97706 !important;
+    color: #fff !important;
+}
+.scenario-action-fault:hover { background: #b45309 !important; }
+.scenario-graph-panel {
+    border-color: rgba(34,211,238,.25);
+}
+html:not(.dark) .regional-event-shell {
+    border-color: #9ecbd8 !important;
+    background: linear-gradient(180deg, #f7fcfd 0%, #eef7fa 100%) !important;
+}
+html:not(.dark) .regional-event-icon { color: #0e7490 !important; }
+html:not(.dark) .scenario-action-regional {
+    background: #0e7490 !important;
+}
+html:not(.dark) .scenario-action-regional:hover { background: #155e75 !important; }
+html:not(.dark) .scenario-action-fault {
+    background: #b45309 !important;
+}
+html:not(.dark) .scenario-action-fault:hover { background: #92400e !important; }
+html:not(.dark) .scenario-graph-panel {
+    border-color: #9ecbd8 !important;
+    background: #f3fafc !important;
+}
+html:not(.dark) .scenario-chart-card {
+    background: #ffffff !important;
+    border-color: #c6dce5 !important;
+}
+html:not(.dark) #scenario-graph-subtitle,
+html:not(.dark) #scenario-graph-close {
+    color: #526b7d !important;
+}
