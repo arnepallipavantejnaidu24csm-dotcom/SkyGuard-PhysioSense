@@ -96,45 +96,127 @@ PERF_STATS = {
     "active_subscribers": 1,
 }
 
-# Initialize data streams for stations
-def init_station_data():
-    print(" -> Initializing synthetic time-series for multi-station network...")
-    for st_id, st in STATIONS.items():
-        seed = abs(hash(st_id)) % 10000
-        config = SyntheticDataConfig(
-            start_time="2026-09-20 00:00:00",
-            duration_days=5.0,
-            frequency_minutes=5,
-            inject_anomalies=True,
-            random_seed=seed,
-        )
-        raw_df, _ = generate_synthetic_aws_data(config)
-        
-        # Process through pipeline
-        t0 = time.time()
-        res = st["pipeline"].process(raw_df, station_id=st_id)
-        latency = (time.time() - t0) * 1000.0
-        PERF_STATS["last_latency_ms"] = round(latency / len(raw_df), 2)
-        PERF_STATS["total_inferences"] += len(raw_df)
+# ============================================================
+# STATION INITIALIZATION
+# ============================================================
 
-        st["stream_data"] = res
-
-def background_initialize():
-    try:
-        print(" -> Starting background station initialization...")
-        init_station_data()
-        print(" -> Station data initialization completed.")
-    except Exception as e:
-        print(f" -> Station data initialization failed: {e}")
+_station_locks = {
+    st_id: threading.Lock()
+    for st_id in STATIONS
+}
 
 
+def initialize_single_station(st_id):
+    """
+    Initialize one station independently.
+    This prevents one slow station from blocking the entire network.
+    """
+    st = STATIONS.get(st_id)
+
+    if st is None:
+        return False
+
+    # Already initialized
+    if st.get("stream_data") is not None:
+        return True
+
+    lock = _station_locks[st_id]
+
+    with lock:
+        # Check again after acquiring lock
+        if st.get("stream_data") is not None:
+            return True
+
+        try:
+            print(f" -> Initializing station: {st_id}")
+
+            seed = abs(hash(st_id)) % 10000
+
+            config = SyntheticDataConfig(
+                start_time="2026-09-20 00:00:00",
+                duration_days=5.0,
+                frequency_minutes=5,
+                inject_anomalies=True,
+                random_seed=seed,
+            )
+
+            raw_df, _ = generate_synthetic_aws_data(config)
+
+            print(f" -> Processing station: {st_id}")
+
+            t0 = time.time()
+
+            result = st["pipeline"].process(
+                raw_df,
+                station_id=st_id
+            )
+
+            latency = (time.time() - t0) * 1000.0
+
+            PERF_STATS["last_latency_ms"] = round(
+                latency / max(len(raw_df), 1),
+                2
+            )
+
+            PERF_STATS["total_inferences"] += len(raw_df)
+
+            st["stream_data"] = result
+
+            print(
+                f" -> Station initialized successfully: "
+                f"{st_id} "
+                f"({len(raw_df)} records)"
+            )
+
+            return True
+
+        except Exception as e:
+            print(
+                f" -> Station initialization failed: "
+                f"{st_id}: {e}"
+            )
+
+            st["stream_data"] = None
+
+            return False
+
+
+def initialize_all_stations_background():
+    """
+    Initialize stations independently in the background.
+    """
+    print(" -> Starting background station initialization...")
+
+    for st_id in STATIONS.keys():
+
+        if STATIONS[st_id].get("stream_data") is not None:
+            continue
+
+        success = initialize_single_station(st_id)
+
+        if success:
+            print(
+                f" -> READY: {st_id}"
+            )
+        else:
+            print(
+                f" -> FAILED: {st_id}"
+            )
+
+    print(" -> Background station initialization completed.")
+
+
+# Start initialization without blocking Flask startup
 if os.environ.get("RENDER") == "true":
+
     threading.Thread(
-        target=background_initialize,
+        target=initialize_all_stations_background,
         daemon=True
     ).start()
+
 else:
-    init_station_data()
+
+    initialize_all_stations_background()
 
 
 @app.route("/")
@@ -178,11 +260,43 @@ def get_stations():
 def get_live_telemetry():
     """Return latest step reading and recent 60-step buffer for live line charts."""
     st_id = request.args.get("station_id", "AWS-01-ISRIKA1-Bheemili")
-    st = STATIONS.get(st_id, STATIONS["AWS-01-ISRIKA1-Bheemili"])
-    res = st["stream_data"]
+
+    st = STATIONS.get(st_id)
+
+    if st is None:
+        return jsonify({
+            "status": "error",
+            "message": f"Unknown station: {st_id}"
+        }), 404
+
+    # Initialize the requested station if it has no data yet
+    if st.get("stream_data") is None:
+        print(f" -> Lazy initializing station: {st_id}")
+        initialize_single_station(st_id)
+
+    res = st.get("stream_data")
 
     if res is None:
-        return jsonify({"status": "error", "message": "Station not initialized"}), 500
+        return jsonify({
+            "status": "error",
+            "message": f"Station {st_id} could not be initialized"
+        }), 500
+
+        if not success:
+            return jsonify({
+                "status": "error",
+                "message": "Station initialization failed",
+                "station_id": st_id
+            }), 500
+
+        res = st["stream_data"]
+
+    if res is None:
+        return jsonify({
+            "status": "error",
+            "message": "Station data unavailable",
+            "station_id": st_id
+        }), 500
 
     # Advance stream index simulation
     st["step_index"] = (st["step_index"] + 1) % len(res.corrected_dataset_df)
