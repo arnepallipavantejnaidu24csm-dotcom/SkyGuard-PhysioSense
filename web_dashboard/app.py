@@ -181,36 +181,30 @@ def initialize_single_station(st_id):
             return False
 
 
-def initialize_all_stations_background():
-    """
-    Initialize stations independently in the background.
-    """
-    print(" -> Starting background station initialization...")
+def background_initialize():
+    try:
+        print("-> Starting lightweight station initialization...")
 
-    for st_id in STATIONS.keys():
+        for st_id in STATIONS:
+            st = STATIONS.get(st_id)
 
-        if STATIONS[st_id].get("stream_data") is not None:
-            continue
+            if st is None:
+                continue
 
-        success = initialize_single_station(st_id)
+            # Only prepare basic station state.
+            # DO NOT train ML models during startup.
+            st["stream_data"] = []
 
-        if success:
-            print(
-                f" -> READY: {st_id}"
-            )
-        else:
-            print(
-                f" -> FAILED: {st_id}"
-            )
+            print(f"-> Station ready: {st_id}")
 
-    print(" -> Background station initialization completed.")
+        print("-> Lightweight initialization completed.")
 
+    except Exception as e:
+        print(f"-> Background initialization failed: {e}")
 
-# Start station initialization in the background.
-# Never block Flask/Gunicorn startup with ML processing.
 
 threading.Thread(
-    target=initialize_all_stations_background,
+    target=background_initialize,
     daemon=True
 ).start()
 
@@ -917,3 +911,5 @@ if __name__ == "__main__":
     print(f" Access URL: http://127.0.0.1:{port}/")
     print(f"================================================================================\n")
     app.run(host="0.0.0.0", port=port, debug=False)
+
+
