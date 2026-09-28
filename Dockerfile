@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+
+RUN pip install --no-cache-dir --default-timeout=120 --retries=10 --user -r requirements.txt
 
 # Stage 2: Final Lightweight Runtime Image
 FROM python:3.11-slim AS runner
