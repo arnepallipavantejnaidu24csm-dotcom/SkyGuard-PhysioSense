@@ -57,4 +57,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:5000/api/metrics || exit 1
 
 # Default command: launch web dashboard
-CMD ["python", "web_dashboard/app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "web_dashboard.app:app"]
