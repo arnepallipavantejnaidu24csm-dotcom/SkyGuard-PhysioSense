@@ -206,17 +206,13 @@ def initialize_all_stations_background():
     print(" -> Background station initialization completed.")
 
 
-# Start initialization without blocking Flask startup
-if os.environ.get("RENDER") == "true":
+# Start station initialization in the background.
+# Never block Flask/Gunicorn startup with ML processing.
 
-    threading.Thread(
-        target=initialize_all_stations_background,
-        daemon=True
-    ).start()
-
-else:
-
-    initialize_all_stations_background()
+threading.Thread(
+    target=initialize_all_stations_background,
+    daemon=True
+).start()
 
 
 @app.route("/")
