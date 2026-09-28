@@ -12,6 +12,7 @@ Provides:
 """
 
 import os
+import threading
 import sys
 import time
 import json
@@ -118,7 +119,22 @@ def init_station_data():
 
         st["stream_data"] = res
 
-init_station_data()
+def background_initialize():
+    try:
+        print(" -> Starting background station initialization...")
+        init_station_data()
+        print(" -> Station data initialization completed.")
+    except Exception as e:
+        print(f" -> Station data initialization failed: {e}")
+
+
+if os.environ.get("RENDER") == "true":
+    threading.Thread(
+        target=background_initialize,
+        daemon=True
+    ).start()
+else:
+    init_station_data()
 
 
 @app.route("/")
